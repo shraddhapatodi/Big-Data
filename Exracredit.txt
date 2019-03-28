@@ -1,0 +1,76 @@
+from __future__ import print_function
+import sys 
+from pyspark.sql import SparkSession 
+from pyspark.mllib.regression import LabeledPoint
+from pyspark.mllib.feature import HashingTF
+from pyspark.mllib.classification import LogisticRegressionWithSGD
+from pyspark.sql import SparkSession
+
+
+def main():
+
+	#Read input query,spam and no spam files
+	spam = spark.sparkContext.textFile("file:///Users/sanya/Downloads/spark-2.4.0-bin-hadoop2.7/email_spam.txt")
+
+	nospam = spark.sparkContext.textFile("file:///Users/sanya/Downloads/spark-2.4.0-bin-hadoop2.7/email_nospam.txt")
+
+	query = spark.sparkContext.textFile("file:///Users/sanya/Downloads/spark-2.4.0-bin-hadoop2.7/10emails.txt")
+
+	#Each email split into words
+	spamwords = spam.map(lambda email: email.split())
+	nospamwords = ham.map(lambda email: email.split())
+
+	#Create a HashingTF instance to map text to vectors
+	tf = HashingTF(numFeatures = 100)
+
+	#Each word mapped to one feature
+	spamFeatures = tf.transform(spamwords)
+	nospamFeatures = tf.transform(nospamwords)
+
+	#create labeledPoint dataset from Spam and nospam
+	spamTraining = spamFeatures.map(lambda email: LabeledPoint(1, email))
+	nospamTraining = nospamFeatures.map(lambda email: LabeledPoint(0, email))
+
+	#combine positive and negative dataset into one
+	training_data = spamTraining.union(nospamTraining)
+
+	#cache the training data to optimise logistic regression
+	training_data.cache()
+
+	#Train the model using logistic Regression Algorithm
+	model = LogisticRegressionWithSGD.train(training_data)
+
+	#split query data into words and map each word to one feature
+	testData = query.map(lambda email: (email, model.predict(tf.transform(email.split(" ")))))
+
+
+	#Finding the final output.
+	Final_input_query =testData.map(lambda x:(x[0].split('\t'),x[1])).map(lambda x:(x[0][0],'spam') if x[1]==1 else (x[0][0],'nospam'))
+
+
+	Final_input_query.collect()
+
+
+if__name__ == "__main__":
+	main()
+
+
+
+Submission in terminal : 
+
+
+sanyas-MacBook-Pro:~ sanya$/Users/sanya/Downloads/spark-2.4.0-bin-hadoop2.7/bin/spark-submit /Users/sanya/Downloads/spark-2.4.0-bin-hadoop2.7/zbin/logistic_regression.py //Users/sanya/Downloads/spark-2.4.0-bin-hadoop2.7/email_spam.txt /Users/sanya/Downloads/spark-2.4.0-bin-hadoop2.7/email_nospam.txt /Users/sanya/Downloads/spark-2.4.0-bin-hadoop2.7/10emails.txt
+
+
+Output:
+[('e100', 'nospam'),
+ ('e200', 'nospam'),
+ ('e300', 'nospam'),
+ ('e400', 'nospam'),
+ ('e500', 'nospam'),
+ ('e600', 'nospam'),
+ ('e700', 'spam'),
+ ('e800', 'spam'),
+ ('e801', 'nospam'),
+ ('e802', 'spam')]
+
