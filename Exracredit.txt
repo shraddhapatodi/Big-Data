@@ -10,11 +10,11 @@ from pyspark.sql import SparkSession
 def main():
 
 	#Read input query,spam and no spam files
-	spam = spark.sparkContext.textFile("file:///Users/sanya/Downloads/spark-2.4.0-bin-hadoop2.7/email_spam.txt")
+	spam = spark.sparkContext.textFile("file:///Users/SP/Downloads/spark-2.4.0-bin-hadoop2.7/email_spam.txt")
 
-	nospam = spark.sparkContext.textFile("file:///Users/sanya/Downloads/spark-2.4.0-bin-hadoop2.7/email_nospam.txt")
+	nospam = spark.sparkContext.textFile("file:///Users/SP/Downloads/spark-2.4.0-bin-hadoop2.7/email_nospam.txt")
 
-	query = spark.sparkContext.textFile("file:///Users/sanya/Downloads/spark-2.4.0-bin-hadoop2.7/10emails.txt")
+	query = spark.sparkContext.textFile("file:///Users/Sp/Downloads/spark-2.4.0-bin-hadoop2.7/10emails.txt")
 
 	#Each email split into words
 	spamwords = spam.map(lambda email: email.split())
@@ -51,26 +51,5 @@ def main():
 	Final_input_query.collect()
 
 
-if__name__ == "__main__":
-	main()
 
-
-
-Submission in terminal : 
-
-
-sanyas-MacBook-Pro:~ sanya$/Users/sanya/Downloads/spark-2.4.0-bin-hadoop2.7/bin/spark-submit /Users/sanya/Downloads/spark-2.4.0-bin-hadoop2.7/zbin/logistic_regression.py //Users/sanya/Downloads/spark-2.4.0-bin-hadoop2.7/email_spam.txt /Users/sanya/Downloads/spark-2.4.0-bin-hadoop2.7/email_nospam.txt /Users/sanya/Downloads/spark-2.4.0-bin-hadoop2.7/10emails.txt
-
-
-Output:
-[('e100', 'nospam'),
- ('e200', 'nospam'),
- ('e300', 'nospam'),
- ('e400', 'nospam'),
- ('e500', 'nospam'),
- ('e600', 'nospam'),
- ('e700', 'spam'),
- ('e800', 'spam'),
- ('e801', 'nospam'),
- ('e802', 'spam')]
 
